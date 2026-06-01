@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            font-family: "Comic Sans MS", "Chalkboard SE", "Comic Neue", sans-serif;
+            background: radial-gradient(circle, rgb(22, 9, 37) 0%, rgb(30, 34, 70) 100%);
+            color: white;
+        }
+        .abc {
+            display: grid;
+            grid-template-columns: repeat(11, 1fr);
+            gap: 15px;
+            width: 400px;
+            height: 400px;
+            position: absolute;
+            top: 55%;
+            left: 50%;
+            transform: translateX(-140%);
+        }
+        .l {
+            width: 100px;
+            height: 100px;
+            font-size: 40px;
+            border-radius: 50%;
+            background: linear-gradient(to bottom, #5b00c4, #79b6fc);
+            border: 5px solid #190055;
+        }
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+            }
+            70% {
+                transform: scale(0.8);
+                box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+            }
+        } 
+        .l:active {
+            animation: pulse 0.1s ease-out;
+        }
+.sprite {
+    background-image: url('hangman.png');
+    box-shadow: 0 0 10px rgb(255, 255, 255);
+    background-size: cover; 
+    width: 225px;
+    height: 0px;
+    position: absolute;
+    top: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: height 0.3s ease;
+}
+        .conets {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.7);
+            background: radial-gradient(circle, rgb(103, 39, 177) 0%, rgb(114, 128, 255) 100%);
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 9999;
+            
+        }
+        #restart {
+            background: linear-gradient(to bottom, #ffd700, #fff279);
+            border: 6px solid;
+            border-color: #816e00;
+            border-radius: 10px;
+            padding: 12px 30px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #5b00c4; 
+            cursor: pointer;
+        }
+        @keyframes restartPulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.7);
+            }
+            50% {
+                transform: scale(0.9);
+                box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+            }
+        }
+        #restart:active {
+            animation: restartPulse 0.2s ease-out;
+        }
+        @keyframes whiteFlash {
+            0% { opacity: 0; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+        .animationwhite {
+            animation: whiteFlash 0.8s ease-in-out forwards;
+        }
+        .overlay {
+            display: block;
+            position: fixed;      
+            top: 0;
+            left: 0;
+            width: 100%;          
+            height: 100%;         
+            background-color: white;
+            z-index: 9999;        
+        }
+     </style>
+</head>
+<body>
+    <div class="sprite"></div>
+    <div class="abc">
+        <button class="l" id="l1">А</button>
+        <button class="l" id="l2">Б</button>
+        <button class="l" id="l3">В</button>
+        <button class="l" id="l4">Г</button>
+        <button class="l" id="l5">Д</button>
+        <button class="l" id="l6">Е</button>
+        <button class="l" id="l7">Ё</button>
+        <button class="l" id="l8">Ж</button>
+        <button class="l" id="l9">З</button>
+        <button class="l" id="l10">И</button>
+        <button class="l" id="l11">Й</button>
+        <button class="l" id="l12">К</button>
+        <button class="l" id="l13">Л</button>
+        <button class="l" id="l14">М</button>
+        <button class="l" id="l15">Н</button>
+        <button class="l" id="l16">О</button>
+        <button class="l" id="l17">П</button>
+        <button class="l" id="l18">Р</button>
+        <button class="l" id="l19">С</button>
+        <button class="l" id="l20">Т</button>
+        <button class="l" id="l21">У</button>
+        <button class="l" id="l22">Ф</button>
+        <button class="l" id="l23">Х</button>
+        <button class="l" id="l24">Ц</button>
+        <button class="l" id="l25">Ч</button>
+        <button class="l" id="l26">Ш</button>
+        <button class="l" id="l27">Щ</button>
+        <button class="l" id="l28">Ъ</button>
+        <button class="l" id="l29">Ы</button>
+        <button class="l" id="l30">Ь</button>
+        <button class="l" id="l31">Э</button>
+        <button class="l" id="l32">Ю</button>
+        <button class="l" id="l33">Я</button>
+    </div>
+    <h1 id="word" style="position: absolute; top: 350px; left: 50%; transform: translateX(-50%); font-size: 48px;"><span>        </span></h1>
+    <div class="conets">
+        <h1>Игра окончена</h1>
+        <h1>Вы <span id = "result"></span></h1>
+        <h1><span id = "word-result"></span></h1>
+        <button id="restart">Начать заново</button>
+    </div>
+    <script>
+        const overlay = document.createElement('div');
+
+        document.body.appendChild(overlay);
+        const letters = document.querySelectorAll('.l');
+        const word = document.getElementById('word');
+        const sprite = document.querySelector('.sprite');
+        let hangman = 0;
+        const words = [
+  "АГЕНТ", "АКТЕР", "АЛМАЗ", "АМБАР", "АОРТА", "АРБУЗ", "АРЕНА", "АРХИВ", "АУДИО", "АФИША", 
+  "БАГАЖ", "БАЛЕТ", "БАНКА", "БАРАН", "БАРОН", "БАСНЯ", "БАШНЯ", "БЕКАС", "БЕЛОК", "БЕТОН", 
+  "ВАГОН", "ВАННА", "ВАРКА", "ВЕСНА", "ВЕТКА", "ВЕЧЕР", "ВЗДОХ", "ВИДЕО", "ВИЛЛА", "ВИХРЬ", 
+  "ГАЗОН", "ГАЙКА", "ГАЛКА", "ГАРАЖ", "ГЕНИЙ", "ГИДРА", "ГЛИНА", "ГОЛОД", "ГОЛОС", "ГОРОД", 
+  "ДВЕРЬ", "ДИВАН", "ДЛИНА", "ДОМИК", "ДОСКА", "ДРАКА", "ДРОВА", "ДУДКА", "ДЯТЕЛ", "ЕГЕРЬ", 
+  "ЕСАУЛ", "ЖАБРА", "ЖАЖДА", "ЖИВОТ", "ЖИРАФ", "ЖУЛИК", "ЖУЧОК", "ЗАБОР", "ЗАВОД", "ЗАМОК", 
+  "ЗАПАД", "ЗЕБРА", "ЗЕНИТ", "ЗЕРНО", "ЗНАМЯ", "ИГРОК", "ИКОНА", "ИКОТА", "ИЛЬИН", "ИНДЮК", 
+  "ИНЖИР", "ИСКРА", "КАБАН", "КАКАО", "КАМИН", "КАМЫШ", "КАНАТ", "КАПЛЯ", "КАРАТ", "КАРТА", 
+  "КАССА", "КАТОК", "ЛАДЬЯ", "ЛАКЕЙ", "ЛАМПА", "ЛАССО", "ЛЕСКА", "ЛИМОН", "МАГИЯ", "МАЛЯР", 
+  "МАНЕЖ", "МАСКА", "МАССА", "МЕШОК", "НАБОР", "НАВЕС", "НАВОД", "НАЖИМ", "НАКАТ", "НАЛОГ", 
+  "НАМЕК", "НАПОР", "НАРОД", "НАРЯД", "ОАЗИС", "ОБВАЛ", "ОБВОД", "ОБМЕН", "ОБНОС", "ПАКЕТ", 
+  "ПАЛЕЦ", "ПАЛКА", "ПАРОМ", "ПАРУС", "ПАСТА", "ПЕВЕЦ", "ПЕСОК", "ПЕТЛЯ", "РАДАР", "РАДИО", 
+  "РАЛЛИ", "РАНЕЦ", "РАУНД", "РЕБУС", "САЛАТ", "САЛОН", "САЛЮТ", "САМЕЦ", "САМКА", "САНКИ", 
+  "САПОГ", "САРАЙ", "САХАР", "СВЕЧА", "ТАБАК", "ТАБУН", "ТАЙНА", "ТАЛИЯ", "ТАЛОН", "ТАНЕЦ", 
+  "ТАРАН", "ТАРИФ", "ТАСКА", "ТАЧКА", "УГРЮМ", "УДАЧА", "УКРОП", "ФАЗАН", "ФАКЕЛ", "ФАКИР", 
+  "ФАУНА", "ФИКУС", "ФИЛИН", "ХАКЕР", "ХАЛАТ", "ХАЛИФ", "ХВАЛА", "ХВОСТ", "ЦАПЛЯ", "ЦАРЕК", 
+  "ЦЕДРА", "ЦЕЗИЙ", "ЧАБАН", "ЧАЙКА", "ЧАРКА", "ЧАШКА", "ШАГОМ", "ШАЙБА", "ШАКАЛ", "ШАЛАШ", 
+  "ШАЛУН", "ШАМАН", "ШАПКА", "ЩЕБЕТ", "ЩЕГОЛ", "ЩЕЛКА", "ЩЕТКА", "ЭДИКТ", "ЮДОЛЬ", "ЮЖНЕЙ", 
+  "ЯБЕДА", "ЯГУАР", "ЯКОРЬ"
+]
+        let VStroki = ["_", "_", "_", "_", "_"];
+        word.textContent = VStroki.join('  ');
+        let randomWord = words[Math.floor(Math.random() * words.length)];
+        document.querySelectorAll('[id^="l"]').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const letter = this.textContent;
+                if (randomWord.includes(letter)) {
+                    for (let i = 0; i < randomWord.length; i++) {
+                        if (randomWord[i] === letter) {
+                            VStroki[i] = letter;
+                        }
+                         
+                    }
+                    this.style.background = "linear-gradient(to bottom, #00ff00, #66ff66)";
+                    this.style.borderColor = "#00aa00";
+                    this.disabled = true;
+                    word.textContent = VStroki.join('  ');
+                    if (!VStroki.includes("_")) {
+                        
+                        document.querySelector('.conets').style.display = 'flex';
+                        document.getElementById('result').textContent = 'победили';
+                        document.getElementById('word-result').textContent = `Загаданное слово было: ${randomWord}`;
+                    }
+                } else {
+                    if (hangman <= 5) {
+                        this.style.background = "linear-gradient(to bottom, #ff0000, #ff6666)";
+                        this.style.borderColor = "#aa0000";
+                        this.disabled = true;
+                        hangman++;
+                        sprite.style.height = `${hangman * 38}px`;
+                    } else 
+                    {
+                        document.querySelector('.conets').style.display = 'flex';
+                        document.getElementById('result').textContent = 'проиграли. Он умер!😁';
+                        document.getElementById('word-result').textContent = `Загаданное слово было: ${randomWord}`;
+                    }
+                };
+            });
+        });
+        document.getElementById('restart').addEventListener('click', function() {
+            overlay.classList.add('overlay');
+            overlay.classList.add('animationwhite');
+             setTimeout(() => {
+                overlay.classList.remove('animationwhite');
+                overlay.classList.remove('overlay');
+            }, 800);
+            letters.forEach(btn => {
+                btn.style.background = "linear-gradient(to bottom, #5b00c4, #79b6fc)";
+                btn.style.borderColor = "#190055";
+                btn.disabled = false;
+            });
+            VStroki = ["_", "_", "_", "_", "_"];
+            word.textContent = VStroki.join('  ');
+            randomWord = words[Math.floor(Math.random() * words.length)];
+            hangman = 0;
+            sprite.style.height = '0px';
+            document.querySelector('.conets').style.display = 'none';
+
+        });
+    </script>
+</body>
+</html>
