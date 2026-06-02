@@ -2,34 +2,112 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Виселица - Адаптивная игра</title>
     <style>
+        * {
+            box-sizing: border-box;
+            user-select: none; /* Убирает выделение текста на мобилках */
+            -webkit-tap-highlight-color: transparent; /* Убирает серый фон при тапе */
+        }
 
         body {
             font-family: "Comic Sans MS", "Chalkboard SE", "Comic Neue", sans-serif;
             background: radial-gradient(circle, rgb(22, 9, 37) 0%, rgb(30, 34, 70) 100%);
             color: white;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            padding: 20px;
+            position: relative;
         }
+
+        /* Заголовок */
+        h1:first-of-type {
+            position: static;
+            transform: none;
+            margin: 0 0 15px 0;
+            font-size: clamp(24px, 8vw, 42px);
+            text-align: center;
+            order: 1;
+        }
+
+        /* Контейнер для спрайта (виселицы) */
+        .sprite {
+            background-image: url('hangman.png');
+            box-shadow: 0 0 10px rgb(255, 255, 255);
+            background-size: cover;
+            background-position: top;
+            background-repeat: no-repeat;
+            width: min(70vw, 225px);
+            height: 0px;
+            margin: 0 auto;
+            border-radius: 10px;
+            transition: height 0.3s ease;
+            order: 2;
+            position: relative;
+            top: auto;
+            left: auto;
+            transform: none;
+            background-position: center top;
+        }
+
+        /* Слово */
+        #word {
+            position: static;
+            transform: none;
+            font-size: clamp(28px, 10vw, 56px);
+            text-align: center;
+            letter-spacing: 8px;
+            margin: 20px 0;
+            order: 3;
+            background: rgba(0,0,0,0.3);
+            padding: 10px 20px;
+            border-radius: 20px;
+            word-break: break-word;
+        }
+
+        /* Сетка букв - адаптивная */
         .abc {
             display: grid;
-            grid-template-columns: repeat(11, 1fr);
-            gap: 15px;
-            width: 400px;
-            height: 400px;
-            position: absolute;
-            top: 55%;
-            left: 50%;
-            transform: translateX(-140%);
+            grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+            gap: 12px;
+            max-width: 800px;
+            width: 100%;
+            margin: 20px auto;
+            order: 4;
+            padding: 0 10px;
+            position: static;
+            transform: none;
+            height: auto;
         }
+
+        /* Стили кнопок-букв */
         .l {
-            width: 100px;
-            height: 100px;
-            font-size: 40px;
+            width: 100%;
+            aspect-ratio: 1 / 1; /* Квадратные кнопки */
+            font-size: clamp(20px, 6vw, 36px);
             border-radius: 50%;
             background: linear-gradient(to bottom, #5b00c4, #79b6fc);
-            border: 5px solid #190055;
+            border: 3px solid #190055;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.05s linear, background 0.2s;
+            font-family: inherit;
+            min-width: 50px;
         }
+
+        /* Эффект нажатия для мобилок */
+        .l:active {
+            transform: scale(0.92);
+            transition: transform 0.05s;
+        }
+
+        /* Оригинальная пульсация при клике */
         @keyframes pulse {
             0% {
                 transform: scale(1);
@@ -43,24 +121,13 @@
                 transform: scale(1);
                 box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
             }
-        } 
+        }
+        
         .l:active {
             animation: pulse 0.1s ease-out;
         }
-        .sprite {
-            background-image: url('hangman.png');
-            box-shadow: 0 0 10px rgb(255, 255, 255);
-            background-size: cover; 
-            width: 225px;
-            height: 0px;
-            position: absolute;
-            top: 50px;
-            left: 50%;
-            transform: translateX(-50%);
-            border-radius: 10px;
-            overflow: hidden;
-            transition: height 0.3s ease;
-        }
+
+        /* Модальное окно (конец игры) */
         .conets {
             display: none;
             position: fixed;
@@ -69,26 +136,39 @@
             width: 100%;
             height: 100%;
             color: white;
-            text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.7);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
             background: radial-gradient(circle, rgb(103, 39, 177) 0%, rgb(114, 128, 255) 100%);
             flex-direction: column;
             justify-content: center;
             align-items: center;
             text-align: center;
             z-index: 9999;
-            
+            padding: 20px;
+            box-sizing: border-box;
         }
+
+        .conets h1 {
+            font-size: clamp(24px, 8vw, 48px);
+            margin: 10px 0;
+        }
+
         #restart {
             background: linear-gradient(to bottom, #ffd700, #fff279);
-            border: 6px solid;
-            border-color: #816e00;
-            border-radius: 10px;
+            border: 6px solid #816e00;
+            border-radius: 50px;
             padding: 12px 30px;
-            font-size: 24px;
+            font-size: clamp(20px, 6vw, 28px);
             font-weight: bold;
-            color: #5b00c4; 
+            color: #5b00c4;
             cursor: pointer;
+            margin-top: 20px;
+            transition: transform 0.1s;
         }
+
+        #restart:active {
+            transform: scale(0.95);
+        }
+
         @keyframes restartPulse {
             0% {
                 transform: scale(1);
@@ -103,32 +183,95 @@
                 box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
             }
         }
+
         #restart:active {
             animation: restartPulse 0.2s ease-out;
         }
+
         @keyframes whiteFlash {
             0% { opacity: 0; }
             50% { opacity: 1; }
             100% { opacity: 0; }
         }
+
         .animationwhite {
             animation: whiteFlash 0.8s ease-in-out forwards;
         }
+
         .overlay {
             display: block;
-            position: fixed;      
+            position: fixed;
             top: 0;
             left: 0;
-            width: 100%;          
-            height: 100%;         
+            width: 100%;
+            height: 100%;
             background-color: white;
-            z-index: 9999;        
+            z-index: 9998;
+            pointer-events: none;
         }
-     </style>
+
+        /* Специально для очень маленьких экранов (до 500px) */
+        @media (max-width: 550px) {
+            .abc {
+                gap: 8px;
+            }
+            .l {
+                font-size: 20px;
+                border-width: 2px;
+            }
+            #word {
+                letter-spacing: 4px;
+                margin: 15px 0;
+            }
+            body {
+                padding: 12px;
+            }
+        }
+
+        /* Для экранов шире 700px — красивая сетка с фиксированным количеством колонок, но адаптивная */
+        @media (min-width: 700px) {
+            .abc {
+                grid-template-columns: repeat(11, 1fr);
+                max-width: 900px;
+            }
+            .l {
+                font-size: 32px;
+            }
+            .sprite {
+                width: 225px;
+            }
+        }
+
+        /* Вертикальное выравнивание для удобства на мобилах */
+        @media (max-width: 480px) {
+            .abc {
+                gap: 6px;
+            }
+            .l {
+                font-size: 18px;
+                min-width: 45px;
+            }
+            .sprite {
+                width: 180px;
+            }
+            #word {
+                font-size: 24px;
+                letter-spacing: 3px;
+            }
+        }
+
+        /* Убираем горизонтальный скролл */
+        body {
+            overflow-x: hidden;
+        }
+    </style>
 </head>
 <body>
-    <h1 style="position: absolute; top: 10px; left: 50%; transform: translateX(-50%);">Виселица</h1>
+
+    <h1>Виселица</h1>
     <div class="sprite"></div>
+    <h1 id="word"><span>_  _  _  _  _</span></h1>
+    
     <div class="abc">
         <button class="l" id="l1">А</button>
         <button class="l" id="l2">Б</button>
@@ -164,100 +307,146 @@
         <button class="l" id="l32">Ю</button>
         <button class="l" id="l33">Я</button>
     </div>
-    <h1 id="word" style="position: absolute; top: 350px; left: 50%; transform: translateX(-50%); font-size: 48px;"><span>        </span></h1>
+
     <div class="conets">
         <h1>Игра окончена</h1>
-        <h1>Вы <span id = "result"></span></h1>
-        <h1><span id = "word-result"></span></h1>
+        <h1>Вы <span id="result"></span></h1>
+        <h1><span id="word-result"></span></h1>
         <button id="restart">Начать заново</button>
     </div>
-    <script>
-        const overlay = document.createElement('div');
 
+    <script>
+        // Создаем overlay для белой вспышки
+        const overlay = document.createElement('div');
         document.body.appendChild(overlay);
+
         const letters = document.querySelectorAll('.l');
-        const word = document.getElementById('word');
+        const wordElement = document.getElementById('word');
         const sprite = document.querySelector('.sprite');
         let hangman = 0;
+
         const words = [
-  "АГЕНТ", "АКТЕР", "АЛМАЗ", "АМБАР", "АОРТА", "АРБУЗ", "АРЕНА", "АРХИВ", "АУДИО", "АФИША", 
-  "БАГАЖ", "БАЛЕТ", "БАНКА", "БАРАН", "БАРОН", "БАСНЯ", "БАШНЯ", "БЕКАС", "БЕЛОК", "БЕТОН", 
-  "ВАГОН", "ВАННА", "ВАРКА", "ВЕСНА", "ВЕТКА", "ВЕЧЕР", "ВЗДОХ", "ВИДЕО", "ВИЛЛА", "ВИХРЬ", 
-  "ГАЗОН", "ГАЙКА", "ГАЛКА", "ГАРАЖ", "ГЕНИЙ", "ГИДРА", "ГЛИНА", "ГОЛОД", "ГОЛОС", "ГОРОД", 
-  "ДВЕРЬ", "ДИВАН", "ДЛИНА", "ДОМИК", "ДОСКА", "ДРАКА", "ДРОВА", "ДУДКА", "ДЯТЕЛ", "ЕГЕРЬ", 
-  "ЕСАУЛ", "ЖАБРА", "ЖАЖДА", "ЖИВОТ", "ЖИРАФ", "ЖУЛИК", "ЖУЧОК", "ЗАБОР", "ЗАВОД", "ЗАМОК", 
-  "ЗАПАД", "ЗЕБРА", "ЗЕНИТ", "ЗЕРНО", "ЗНАМЯ", "ИГРОК", "ИКОНА", "ИКОТА", "ИЛЬИН", "ИНДЮК", 
-  "ИНЖИР", "ИСКРА", "КАБАН", "КАКАО", "КАМИН", "КАМЫШ", "КАНАТ", "КАПЛЯ", "КАРАТ", "КАРТА", 
-  "КАССА", "КАТОК", "ЛАДЬЯ", "ЛАКЕЙ", "ЛАМПА", "ЛАССО", "ЛЕСКА", "ЛИМОН", "МАГИЯ", "МАЛЯР", 
-  "МАНЕЖ", "МАСКА", "МАССА", "МЕШОК", "НАБОР", "НАВЕС", "НАВОД", "НАЖИМ", "НАКАТ", "НАЛОГ", 
-  "НАМЕК", "НАПОР", "НАРОД", "НАРЯД", "ОАЗИС", "ОБВАЛ", "ОБВОД", "ОБМЕН", "ОБНОС", "ПАКЕТ", 
-  "ПАЛЕЦ", "ПАЛКА", "ПАРОМ", "ПАРУС", "ПАСТА", "ПЕВЕЦ", "ПЕСОК", "ПЕТЛЯ", "РАДАР", "РАДИО", 
-  "РАЛЛИ", "РАНЕЦ", "РАУНД", "РЕБУС", "САЛАТ", "САЛОН", "САЛЮТ", "САМЕЦ", "САМКА", "САНКИ", 
-  "САПОГ", "САРАЙ", "САХАР", "СВЕЧА", "ТАБАК", "ТАБУН", "ТАЙНА", "ТАЛИЯ", "ТАЛОН", "ТАНЕЦ", 
-  "ТАРАН", "ТАРИФ", "ТАСКА", "ТАЧКА", "УГРЮМ", "УДАЧА", "УКРОП", "ФАЗАН", "ФАКЕЛ", "ФАКИР", 
-  "ФАУНА", "ФИКУС", "ФИЛИН", "ХАКЕР", "ХАЛАТ", "ХАЛИФ", "ХВАЛА", "ХВОСТ", "ЦАПЛЯ", "ЦАРЕК", 
-  "ЦЕДРА", "ЦЕЗИЙ", "ЧАБАН", "ЧАЙКА", "ЧАРКА", "ЧАШКА", "ШАГОМ", "ШАЙБА", "ШАКАЛ", "ШАЛАШ", 
-  "ШАЛУН", "ШАМАН", "ШАПКА", "ЩЕБЕТ", "ЩЕГОЛ", "ЩЕЛКА", "ЩЕТКА", "ЭДИКТ", "ЮДОЛЬ", "ЮЖНЕЙ", 
-  "ЯБЕДА", "ЯГУАР", "ЯКОРЬ"
-]
-        let VStroki = ["_", "_", "_", "_", "_"];
-        word.textContent = VStroki.join('  ');
-        let randomWord = words[Math.floor(Math.random() * words.length)];
-        document.querySelectorAll('[id^="l"]').forEach(btn => {
-            btn.addEventListener('click', function() {
+            "АГЕНТ", "АКТЕР", "АЛМАЗ", "АМБАР", "АОРТА", "АРБУЗ", "АРЕНА", "АРХИВ", "АУДИО", "АФИША", 
+            "БАГАЖ", "БАЛЕТ", "БАНКА", "БАРАН", "БАРОН", "БАСНЯ", "БАШНЯ", "БЕКАС", "БЕЛОК", "БЕТОН", 
+            "ВАГОН", "ВАННА", "ВАРКА", "ВЕСНА", "ВЕТКА", "ВЕЧЕР", "ВЗДОХ", "ВИДЕО", "ВИЛЛА", "ВИХРЬ", 
+            "ГАЗОН", "ГАЙКА", "ГАЛКА", "ГАРАЖ", "ГЕНИЙ", "ГИДРА", "ГЛИНА", "ГОЛОД", "ГОЛОС", "ГОРОД", 
+            "ДВЕРЬ", "ДИВАН", "ДЛИНА", "ДОМИК", "ДОСКА", "ДРАКА", "ДРОВА", "ДУДКА", "ДЯТЕЛ", "ЕГЕРЬ", 
+            "ЕСАУЛ", "ЖАБРА", "ЖАЖДА", "ЖИВОТ", "ЖИРАФ", "ЖУЛИК", "ЖУЧОК", "ЗАБОР", "ЗАВОД", "ЗАМОК", 
+            "ЗАПАД", "ЗЕБРА", "ЗЕНИТ", "ЗЕРНО", "ЗНАМЯ", "ИГРОК", "ИКОНА", "ИКОТА", "ИЛЬИН", "ИНДЮК", 
+            "ИНЖИР", "ИСКРА", "КАБАН", "КАКАО", "КАМИН", "КАМЫШ", "КАНАТ", "КАПЛЯ", "КАРАТ", "КАРТА", 
+            "КАССА", "КАТОК", "ЛАДЬЯ", "ЛАКЕЙ", "ЛАМПА", "ЛАССО", "ЛЕСКА", "ЛИМОН", "МАГИЯ", "МАЛЯР", 
+            "МАНЕЖ", "МАСКА", "МАССА", "МЕШОК", "НАБОР", "НАВЕС", "НАВОД", "НАЖИМ", "НАКАТ", "НАЛОГ", 
+            "НАМЕК", "НАПОР", "НАРОД", "НАРЯД", "ОАЗИС", "ОБВАЛ", "ОБВОД", "ОБМЕН", "ОБНОС", "ПАКЕТ", 
+            "ПАЛЕЦ", "ПАЛКА", "ПАРОМ", "ПАРУС", "ПАСТА", "ПЕВЕЦ", "ПЕСОК", "ПЕТЛЯ", "РАДАР", "РАДИО", 
+            "РАЛЛИ", "РАНЕЦ", "РАУНД", "РЕБУС", "САЛАТ", "САЛОН", "САЛЮТ", "САМЕЦ", "САМКА", "САНКИ", 
+            "САПОГ", "САРАЙ", "САХАР", "СВЕЧА", "ТАБАК", "ТАБУН", "ТАЙНА", "ТАЛИЯ", "ТАЛОН", "ТАНЕЦ", 
+            "ТАРАН", "ТАРИФ", "ТАСКА", "ТАЧКА", "УГРЮМ", "УДАЧА", "УКРОП", "ФАЗАН", "ФАКЕЛ", "ФАКИР", 
+            "ФАУНА", "ФИКУС", "ФИЛИН", "ХАКЕР", "ХАЛАТ", "ХАЛИФ", "ХВАЛА", "ХВОСТ", "ЦАПЛЯ", "ЦАРЕК", 
+            "ЦЕДРА", "ЦЕЗИЙ", "ЧАБАН", "ЧАЙКА", "ЧАРКА", "ЧАШКА", "ШАГОМ", "ШАЙБА", "ШАКАЛ", "ШАЛАШ", 
+            "ШАЛУН", "ШАМАН", "ШАПКА", "ЩЕБЕТ", "ЩЕГОЛ", "ЩЕЛКА", "ЩЕТКА", "ЭДИКТ", "ЮДОЛЬ", "ЮЖНЕЙ", 
+            "ЯБЕДА", "ЯГУАР", "ЯКОРЬ"
+        ];
+
+        let currentWord = "";
+        let guessedLettersArray = [];
+        function updateWordDisplay() {
+            wordElement.textContent = guessedLettersArray.join('  ');
+        }
+        function initGame() {
+            currentWord = words[Math.floor(Math.random() * words.length)];
+            guessedLettersArray = [];
+            for (let i = 0; i < currentWord.length; i++) {
+                guessedLettersArray.push("_");
+            }
+            updateWordDisplay(); 
+            hangman = 0;
+            sprite.style.height = '0px';
+            letters.forEach(btn => {
+                btn.disabled = false;
+                btn.style.background = "linear-gradient(to bottom, #5b00c4, #79b6fc)";
+                btn.style.borderColor = "#190055";
+            });
+            document.querySelector('.conets').style.display = 'none';
+        }
+        function checkWin() {
+            if (!guessedLettersArray.includes("_")) {
+                // Победа!
+                document.querySelector('.conets').style.display = 'flex';
+                document.getElementById('result').textContent = 'победили! 🎉';
+                document.getElementById('word-result').textContent = `Загаданное слово: ${currentWord}`;
+                return true;
+            }
+            return false;
+        }
+        function addMistake() {
+            if (hangman < 6) {
+                hangman++;
+                sprite.style.height = `${hangman * 38}px`;
+            }
+            if (hangman >= 6) {
+                document.querySelector('.conets').style.display = 'flex';
+                document.getElementById('result').textContent = 'проиграли. Он умер! 😁';
+                document.getElementById('word-result').textContent = `Загаданное слово было: ${currentWord}`;
+                return true;
+            }
+            return false;
+        }
+        function handleLetterClick(button, letter) {
+            if (button.disabled) return;
+            if (currentWord.includes(letter)) {
+                let anyMatch = false;
+                for (let i = 0; i < currentWord.length; i++) {
+                    if (currentWord[i] === letter && guessedLettersArray[i] === "_") {
+                        guessedLettersArray[i] = letter;
+                        anyMatch = true;
+                    }
+                }
+                if (anyMatch) {
+                    updateWordDisplay();
+                    button.style.background = "linear-gradient(to bottom, #00aa00, #55ff55)";
+                    button.style.borderColor = "#006600";
+                    button.disabled = true;
+                    
+                    if (!guessedLettersArray.includes("_")) {
+                        document.querySelector('.conets').style.display = 'flex';
+                        document.getElementById('result').textContent = 'победили! 🎉';
+                        document.getElementById('word-result').textContent = `Загаданное слово: ${currentWord}`;
+                    }
+                }
+            } else {
+                button.style.background = "linear-gradient(to bottom, #cc0000, #ff4444)";
+                button.style.borderColor = "#880000";
+                button.disabled = true;
+                const gameOver = addMistake();
+                if (gameOver) return;
+            }
+        }
+        letters.forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
                 const letter = this.textContent;
-                if (randomWord.includes(letter)) {
-                    for (let i = 0; i < randomWord.length; i++) {
-                        if (randomWord[i] === letter) {
-                            VStroki[i] = letter;
-                        }
-                         
-                    }
-                    this.style.background = "linear-gradient(to bottom, #00ff00, #66ff66)";
-                    this.style.borderColor = "#00aa00";
-                    this.disabled = true;
-                    word.textContent = VStroki.join('  ');
-                    if (!VStroki.includes("_")) {
-                        
-                        document.querySelector('.conets').style.display = 'flex';
-                        document.getElementById('result').textContent = 'победили';
-                        document.getElementById('word-result').textContent = `Загаданное слово было: ${randomWord}`;
-                    }
-                } else {
-                    if (hangman <= 5) {
-                        this.style.background = "linear-gradient(to bottom, #ff0000, #ff6666)";
-                        this.style.borderColor = "#aa0000";
-                        this.disabled = true;
-                        hangman++;
-                        sprite.style.height = `${hangman * 38}px`;
-                    } else 
-                    {
-                        document.querySelector('.conets').style.display = 'flex';
-                        document.getElementById('result').textContent = 'проиграли. Он умер!😁';
-                        document.getElementById('word-result').textContent = `Загаданное слово было: ${randomWord}`;
-                    }
-                };
+                handleLetterClick(this, letter);
+            });
+            btn.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                this.click();
             });
         });
-        document.getElementById('restart').addEventListener('click', function() {
+        const restartBtn = document.getElementById('restart');
+        restartBtn.addEventListener('click', function() {
             overlay.classList.add('overlay');
             overlay.classList.add('animationwhite');
-             setTimeout(() => {
+            setTimeout(() => {
                 overlay.classList.remove('animationwhite');
                 overlay.classList.remove('overlay');
             }, 800);
-            letters.forEach(btn => {
-                btn.style.background = "linear-gradient(to bottom, #5b00c4, #79b6fc)";
-                btn.style.borderColor = "#190055";
-                btn.disabled = false;
-            });
-            VStroki = ["_", "_", "_", "_", "_"];
-            word.textContent = VStroki.join('  ');
-            randomWord = words[Math.floor(Math.random() * words.length)];
-            hangman = 0;
-            sprite.style.height = '0px';
-            document.querySelector('.conets').style.display = 'none';
-
+            initGame();
+        });
+        initGame();
+        window.addEventListener('resize', () => {
+            if (hangman > 0) {
+                sprite.style.height = `${hangman * 38}px`;
+            }
         });
     </script>
 </body>
